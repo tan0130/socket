@@ -20,8 +20,6 @@ public class PoolServer {
 
             // 创建无界缓冲池
             ExecutorService exec = Executors.newCachedThreadPool();
-
-
             exec.execute(new Runnable() {
                 @Override
                 public void run() {

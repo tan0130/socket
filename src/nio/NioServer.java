@@ -7,6 +7,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 
 /**
@@ -15,7 +17,11 @@ import java.util.Iterator;
  **/
 public class NioServer {
     public static void main(String[] args) throws IOException {
-        System.out.println("...服务端已经启动了...");
+        // 获取当前时间
+        String current_time = function.Function.getCurrentTime();
+
+
+        System.out.println(current_time + ":...服务端已经启动了...");
         // 1. 创建通道
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
         // 2. 切换非阻塞
@@ -49,9 +55,25 @@ public class NioServer {
                     int len = 0;
                     while ((len = socketChannel.read(byteBuffer)) > 0) {
                         byteBuffer.flip();
-                        System.out.println(new String(byteBuffer.array(), 0 ,len));
+                        if (new String(byteBuffer.array(), 0 ,len).equals("exit")) {
+                            System.out.println(current_time + ":客户端已安全退出");
+                            System.exit(0);
+                        } else {
+                            System.out.println(current_time + ":收到来自客户端的数据:" +  new String(byteBuffer.array(), 0 ,len));
+
+                        }
                         byteBuffer.clear();
                     }
+                } else if (selectionKey.isWritable()) {
+                    ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+                    byteBuffer.clear();
+                    SocketChannel socketChannel = (SocketChannel)selectionKey.channel();
+                    String str = "hello world";
+                    byteBuffer.put(str.getBytes());
+                    byteBuffer.flip();
+                    socketChannel.write(byteBuffer);
+                    //socketChannel.register(selector, SelectionKey.OP_READ);
+                    System.out.println(current_time + ":服务端向客户端发送信息:" + str);
                 }
             }
             iterator.remove();

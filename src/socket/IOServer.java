@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 /**
@@ -12,8 +14,12 @@ import java.util.Scanner;
  **/
 public class IOServer {
     public static void main(String[] args) throws IOException {
+        // 获取当前时间
+        LocalDateTime localDateTime = LocalDateTime.now();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+        String current_time = localDateTime.format(dateTimeFormatter);
         try {
-            System.out.println("...服务端启动了...");
+            System.out.println(current_time + ":...服务端启动了...");
             ServerSocket serverSocket = new ServerSocket(8080);
             Socket socket = serverSocket.accept();
             // 创建输入流来换取客户端的输出流
@@ -23,15 +29,15 @@ public class IOServer {
             OutputStream outputStream = socket.getOutputStream();
             DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
 
-            System.out.println("客户端ip：" + socket.getInetAddress() + "已连接");
+            System.out.println(current_time + ":客户端ip：" + socket.getInetAddress() + "已连接");
             dataOutputStream.writeUTF("欢迎连接");
             String str = "";
             while (true) {
                 str = dataInputStream.readUTF();
                 if (str.contains("exit")) {
-                    System.out.println("客户端ip:" + socket.getInetAddress() + "已断开连接");
+                    System.out.println(current_time + ":客户端ip:" + socket.getInetAddress() + "已断开连接");
                 } else {
-                    System.out.println("来自客户端的数据:" + str);
+                    System.out.println(current_time + ":来自客户端的数据:" + str);
                     dataOutputStream.writeUTF("数据已接收");
                 }
             }

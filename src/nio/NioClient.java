@@ -13,7 +13,10 @@ import java.util.Scanner;
  **/
 public class NioClient {
     public static void main(String[] args) throws IOException {
-        System.out.println("...客户端启动了...");
+        // 获取当前时间
+        String current_time = function.Function.getCurrentTime();
+
+        System.out.println(current_time +  ":...客户端启动了...");
         // 1. 创建通道
         SocketChannel socketChannel = SocketChannel.open(new InetSocketAddress("127.0.0.1",9999));
         // 2. 切换非阻塞
@@ -22,14 +25,17 @@ public class NioClient {
         ByteBuffer allocate = ByteBuffer.allocate(1024);
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("请输入内容:");
+        System.out.print(current_time + ":请输入内容:");
         while (scanner.hasNext()) {
-            System.out.println("请输入内容:");
+            System.out.print(current_time + ":请输入内容:");
             String str = scanner.nextLine();
-            allocate.put((new Date().toString() + "\n" + str).getBytes());
+            allocate.put(str.getBytes());
             // 4. 切换到读取模式
             allocate.flip();
             socketChannel.write(allocate);
+            if (str.equals("exit")) {
+                System.exit(0);
+            }
             allocate.clear();
         }
         socketChannel.close();
